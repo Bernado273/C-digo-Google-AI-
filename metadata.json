@@ -1,0 +1,5 @@
+{
+  "name": "APK Builder SaaS",
+  "description": "A professional SaaS platform for automatically generating Android APK files from projects, source code, or website URLs.",
+  "requestFramePermissions": []
+}

@@ -1,0 +1,33 @@
+# Android SDK Build Environment
+FROM ubuntu:22.04
+
+# Install dependencies
+RUN apt-get update && apt-get install -y \
+    openjdk-17-jdk \
+    wget \
+    unzip \
+    git \
+    python3 \
+    build-essential
+
+# Install Android SDK
+ENV ANDROID_SDK_ROOT /opt/android-sdk
+RUN mkdir -p ${ANDROID_SDK_ROOT}/cmdline-tools
+RUN wget https://dl.google.com/android/repository/commandlinetools-linux-9477386_latest.zip -O sdk.zip \
+    && unzip sdk.zip -d ${ANDROID_SDK_ROOT}/cmdline-tools \
+    && rm sdk.zip \
+    && mv ${ANDROID_SDK_ROOT}/cmdline-tools/cmdline-tools ${ANDROID_SDK_ROOT}/cmdline-tools/latest
+
+ENV PATH ${PATH}:${ANDROID_SDK_ROOT}/cmdline-tools/latest/bin:${ANDROID_SDK_ROOT}/platform-tools
+
+# Accept licenses
+RUN yes | sdkmanager --licenses
+
+# Install platform tools and build tools
+RUN sdkmanager "platform-tools" "platforms;android-33" "build-tools;33.0.2"
+
+WORKDIR /app
+COPY . .
+
+# Build script entrypoint
+CMD ["./gradlew", "assembleRelease"]
